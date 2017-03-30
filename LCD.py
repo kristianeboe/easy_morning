@@ -2,7 +2,6 @@ import smbus
 import time
 import datetime
 
-# DUMMY COMMENT
 # Define some device parameters
 I2C_ADDR  = 0x27 # I2C device address
 LCD_WIDTH = 20   # Maximum characters per line
