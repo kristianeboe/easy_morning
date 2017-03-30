@@ -9,7 +9,7 @@ cmd.split()
 cmd = 'mpc play'
 os.sys.cmd(cmd)
 
-for i in range(0, 20):
+for i in range(0, 15):
     cmd = 'mpc volume +2'
     cmd.split()
     os.sys.cmd(cmd)
