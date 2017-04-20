@@ -32,29 +32,43 @@ Template.add_alarm.events({
     const form = event.target;
     const alarm_name = form.alarm_name.value
     wake_up_time = form.wake_up_time.value
-    
+
     const selected_days = document.querySelectorAll('#wake_up_days option:checked');
-    const wake_up_days_values = Array.from(selected_days).filter(el => el.value == "")
-    console.log(wake_up_days_values)
-    const lol = wake_up_days_values.map((el) => {
+    const wake_up_days_values = Array.from(selected_days).filter(el => el.value != "")
+
+
+    const wake_up_days = wake_up_days_values.map((el) => {
       if(el.value == "0"){
         return "Monday";
       }
       if(el.value == "1"){
         return "Tuesday";
       }
+      if(el.value == "2"){
+        return "Wednesday";
+      }
+      if(el.value == "3"){
+        return "Thursday";
+      }
+      if(el.value == "4"){
+        return "Friday";
+      }
+      if(el.value == "5"){
+        return "Saturday";
+      }
+      if(el.value == "6"){
+        return "Sunday";
+      }
     });
-    console.log(wake_up_days_values)
-    // const wake_up_days = wake_up_time_values.map(time => {
-      // if(time == "")
-      // console.log(time)
-    // })
-    // AlarmDB.insert({
-    //   'name': alarm_name,
-    //   'wake_up_time': wake_up_time,
-    //   'wake_up_days': wake_up_days,
-    //   'on': true
-    // })
+    console.log(wake_up_days)
+
+
+    AlarmDB.insert({
+      'name': alarm_name,
+      'wake_up_time': wake_up_time,
+      'wake_up_days': wake_up_days,
+      'on': true
+    })
     // console.log(alarm_name)
     // console.log(wake_up_time)
     // console.log(wake_up_days)
