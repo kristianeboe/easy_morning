@@ -31,6 +31,7 @@ Template.add_alarm.events({
     event.preventDefault();
     const form = event.target;
     const alarm_name = form.alarm_name.value
+    console.log(alarm_name)
     wake_up_time = form.wake_up_time.value
 
     const selected_days = document.querySelectorAll('#wake_up_days option:checked');
@@ -55,9 +56,79 @@ Template.alarm_list.helpers({
 
     console.log(alarms_from_db)
 
-    return alarms_from_db
+    return alarms_from_db   
+  },
+  week() {
+    return [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ]
+  },
+  wake_up_day(alarm_name, day) {
+    if (alarm_name == "School" && (day == "Wednesday" ||  day == "Thursday")) {
+      return 'selected'
+    }
+    if (alarm_name == "Work" && (day == "Monday" ||  day == "Friday")) {
+      return 'selected'
+    }
 
-    return [{
+    return ''
+  }
+})
+
+
+Template.alarm_list_2.helpers({
+  alarms() {
+    alarms_from_db = AlarmDB.find().fetch();
+    // const alarms = alarms_from_db.map
+
+    console.log(alarms_from_db)
+
+    return alarms_from_db   
+  },
+  week() {
+    return [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ]
+  },
+  wake_up_day(alarm_name, day) {
+    if (alarm_name == "School" && (day == "Wednesday" ||  day == "Thursday")) {
+      return 'selected'
+    }
+    if (alarm_name == "Work" && (day == "Monday" ||  day == "Friday")) {
+      return 'selected'
+    }
+
+    return ''
+  }
+})
+
+Template.alarm_list_2.events({
+  'click .remove_alarm' (event, instance) {
+    target = event.target
+    _id = target.id.substr(7)
+    Meteor.call('remove_alarm', _id)
+  },
+  'click .switch' (event) {
+    _id = event.target.id.substr(3)
+    Meteor.call('update_on_off', _id)
+  }
+})
+
+
+/*
+return [{
         'name': 'School',
         'wake_up_time': '0700',
         'wake_up_days': {
@@ -100,26 +171,4 @@ Template.alarm_list.helpers({
         'on': false,
       },
     ]
-  },
-  week() {
-    return [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
-    ]
-  },
-  wake_up_day(alarm_name, day) {
-    if (alarm_name == "School" && (day == "Wednesday" ||  day == "Thursday")) {
-      return 'selected'
-    }
-    if (alarm_name == "Work" && (day == "Monday" ||  day == "Friday")) {
-      return 'selected'
-    }
-
-    return ''
-  }
-})
+    */
