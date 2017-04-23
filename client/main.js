@@ -45,7 +45,7 @@ Template.add_alarm.events({
     }
 
     Meteor.call('create_alarm', alarm)
-    
+    event.target.reset();
   }
 })
 
