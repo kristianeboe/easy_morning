@@ -111,3 +111,9 @@ Template.alarm_list.events({
     Meteor.call('update_on_off', _id)
   }
 })
+
+Template.update_db.events({
+  'click' (event, instance) {
+    Meteor.call('update_ras_pi')
+  }
+})

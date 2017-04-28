@@ -14,6 +14,7 @@
     {{#if currentUser}} 
       {{> add_alarm}} 
       {{> alarm_list}}
+      {{> update_db}}
       <script>
         $(document).ready(function () {
           $('select').material_select();
@@ -91,7 +92,7 @@
                 <!--{{#if wake_up_day alarm.name day}}selected{{/if}}-->
               {{/each}}
             </select>
-          <label>Materialize Multiple Select</label>
+          <label>Days to wake up</label>
         </div>
         <div class="input-field col s2">
           <div class="switch">
@@ -112,4 +113,8 @@
 
   </div>
   {{/each}}
+</template>
+
+<template name="update_db">
+  <button class="btn waves-effect waves-light" name="action">Update database</button>
 </template>
