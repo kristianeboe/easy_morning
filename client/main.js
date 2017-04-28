@@ -31,15 +31,18 @@ Template.add_alarm.events({
     event.preventDefault();
     const form = event.target;
     const alarm_name = form.alarm_name.value
-    console.log(alarm_name)
-    wake_up_time = form.wake_up_time.value
+    const wake_up_time = form.wake_up_time.value
+    const wake_up_threshold = form.wake_up_threshold.value
 
     const selected_days = document.querySelectorAll('#wake_up_days option:checked');
-    const wake_up_days_values = Array.from(selected_days).filter(el => el.value != "")
-
+    const wake_up_days_values = Array.from(selected_days).filter(el => el.value != "").map((el) => {
+      return el.value
+        });
+  
     alarm = {
       'name': alarm_name,
       'wake_up_time': wake_up_time,
+      'wake_up_threshold': wake_up_threshold,
       'wake_up_days': wake_up_days_values,
       'on': true
     }
@@ -51,70 +54,53 @@ Template.add_alarm.events({
 
 Template.alarm_list.helpers({
   alarms() {
-    alarms_from_db = AlarmDB.find().fetch();
-    // const alarms = alarms_from_db.map
+    user_id = Meteor.userId()
+    alarms = AlarmDB.find({ userId: user_id }).fetch()
+    console.log(alarms)
 
-    console.log(alarms_from_db)
-
-    return alarms_from_db   
+    return alarms
   },
   week() {
     return [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
+      {
+        'day_num': '0',
+        'day_name': 'Monday'
+      },
+      {
+        'day_num': '1',
+        'day_name': 'Tuesday'
+      },
+      {
+        'day_num': '2',
+        'day_name': 'Wednesday'
+      },
+      {
+        'day_num': '3',
+        'day_name': 'Thursday'
+      },
+      {
+        'day_num': '4',
+        'day_name': 'Friday'
+      },
+      {
+        'day_num': '5',
+        'day_name': 'Saturday'
+      },
+      {
+        'day_num': '6',
+        'day_name': 'Sunday'
+      },
     ]
   },
-  wake_up_day(alarm_name, day) {
-    if (alarm_name == "School" && (day == "Wednesday" ||  day == "Thursday")) {
+  wake_up_day(alarm, day) {
+    if(alarm.wake_up_days.indexOf(day.day_num) >= 0) {
       return 'selected'
     }
-    if (alarm_name == "Work" && (day == "Monday" ||  day == "Friday")) {
-      return 'selected'
-    }
-
     return ''
   }
 })
 
-
-Template.alarm_list_2.helpers({
-  alarms() {
-    alarms_from_db = AlarmDB.find().fetch();
-    // const alarms = alarms_from_db.map
-
-    console.log(alarms_from_db)
-
-    return alarms_from_db   
-  },
-  week() {
-    return [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
-    ]
-  },
-  wake_up_day(alarm_name, day) {
-    if (alarm_name == "School" && (day == "Wednesday" ||  day == "Thursday")) {
-      return 'selected'
-    }
-    if (alarm_name == "Work" && (day == "Monday" ||  day == "Friday")) {
-      return 'selected'
-    }
-
-    return ''
-  }
-})
-
-Template.alarm_list_2.events({
+Template.alarm_list.events({
   'click .remove_alarm' (event, instance) {
     target = event.target
     _id = target.id.substr(7)
@@ -125,50 +111,3 @@ Template.alarm_list_2.events({
     Meteor.call('update_on_off', _id)
   }
 })
-
-
-/*
-return [{
-        'name': 'School',
-        'wake_up_time': '0700',
-        'wake_up_days': {
-          'Monday': '',
-          'Tuesday': '',
-          'Wednesday': 'selected',
-          'Thursday': 'selected',
-          'Friday': '',
-          'Saturday': '',
-          'Sunday': ''
-        },
-        'on': true,
-      },
-      {
-        'name': 'Work',
-        'wake_up_time': '0700',
-        'wake_up_days': {
-          'Monday': 'selected',
-          'Tuesday': '',
-          'Wednesday': '',
-          'Thursday': '',
-          'Friday': 'selected',
-          'Saturday': '',
-          'Sunday': ''
-        },
-        'on': true,
-      },
-      {
-        'name': 'Party',
-        'wake_up_time': '1900',
-        'wake_up_days': {
-          'Monday': '',
-          'Tuesday': '',
-          'Wednesday': '',
-          'Thursday': '',
-          'Friday': 'selected',
-          'Saturday': 'selected',
-          'Sunday': ''
-        },
-        'on': false,
-      },
-    ]
-    */

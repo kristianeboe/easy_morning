@@ -1,47 +1,57 @@
 <head>
   <title>easy_morning_blaze</title>
-  <script
-    src="https://code.jquery.com/jquery-3.2.1.min.js"
-    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
     crossorigin="anonymous"></script>
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
 </head>
 
 <body>
   <div class="container">
-    
 
-    {{> header}}
-    {{> add_alarm}}
-    {{> alarm_list_2}}
+
+    {{> header}} 
+    {{#if currentUser}} 
+      {{> add_alarm}} 
+      {{> alarm_list}}
+      <script>
+        $(document).ready(function () {
+          $('select').material_select();
+        });
+      </script>
+    {{else}}
+      <p>You must be logged-in to add and change alarms</p>
+    {{/if}}
   </div>
-  
-  <script>
-    $(document).ready(function() {
-      $('select').material_select();
-    });
-  </script>
+
+
 </body>
 
 <template name="header">
   <h1>Welcome to Easy Morning</h1>
+  <p>
+    {{> loginButtons}}
+  </p>
 </template>
 
 <template name="add_alarm">
 
-      <form class="col s12">
-        <div class="row">
-          <div class="input-field col s3">
-            <input placeholder="School" id="alarm_name" name="alarm_name" type="text" class="validate">
-            <label for="alarm_name">Alarm name</label>
-          </div>
-          <div class="input-field col s3">
-            <input id="wake_up_time" name="wake_up_time" type="text">
-            <label for="wake_up_time">Wake up time</label>
-          </div>
-          <div class="input-field col s3">
-            <select id="wake_up_days" multiple>
+  <form class="col s12">
+    <div class="row">
+      <div class="input-field col s2">
+        <input id="alarm_name" name="alarm_name" type="text" class="validate">
+        <label for="alarm_name">Alarm name</label>
+      </div>
+      <div class="input-field col s2">
+        <input id="wake_up_time" name="wake_up_time" type="text">
+        <label for="wake_up_time">Wake up time</label>
+      </div>
+      <div class="input-field col s2">
+        <input id="wake_up_threshold" name="wake_up_threshold" type="text">
+        <label for="wake_up_threshold">Wake up threshold</label>
+      </div>
+      <div class="input-field col s3">
+        <select id="wake_up_days" multiple>
               <option value="" disabled selected>Choose your option</option>
               <option value="0">Monday</option>
               <option value="1">Tuesday</option>
@@ -51,93 +61,55 @@
               <option value="5">Saturday</option>
               <option value="6">Sunday</option>
             </select>
-            <label>Choose days to wake up</label>
-          </div>
-          <button class="btn input-field waves-effect waves-light" type="submit" name="action">Add alarm
+        <label>Choose days to wake up</label>
+      </div>
+      <button class="btn input-field col s3 waves-effect waves-light" type="submit" name="action">Add alarm
             <!--<i class="material-icons right">send</i>-->
         </button>
-        </div>
-      </form>
+    </div>
+  </form>
 </template>
+
 
 <template name="alarm_list">
   {{#each alarm in alarms}}
-    <div>
+  <div class="card-panel hoverable small">
+    <div class="card-content">
       <div class="row">
-          <div class="input-field col s3">
-            <input id="alarm_name" type="text" class="validate" value={{alarm.name}}>
-            <label for="alarm_name">Alarm name</label>
-          </div>
-          <div class="input-field col s3">
-            <input id="wake_up_time" type="text" value="{{alarm.wake_up_time}}">
-            <label for="wake_up_time">Wake up time</label>
-          </div>
-          <div class="input-field col s3">
-            <select multiple>
-              <option value="" disabled selected>Choose your option</option>
-              {{#each day in week}}
-                <option value="{{day}}" {{wake_up_day alarm.name day}}>{{day}}</option>
-                <!--{{#if wake_up_day alarm.name day}}selected{{/if}}-->
-              {{/each}}
-            </select>
-            <label>Materialize Multiple Select</label>
-          </div>
-          <div class="input-field col s3">
-            <div class="switch">
-              <label>
-                Off
-                <input id="add_alarm_toggle" checked="{{alarm.on}}" type="checkbox">
-                <span class="lever"></span>
-                On
-              </label>
-            </div>
-          </div>
+        <div class="input-field col s3">
+          <input name="alarm_name" type="text" class="validate" value={{alarm.name}}>
         </div>
-    </div>
-    <!--{{#each tag in todo.tags}}-->
-      <!-- in here, both todo and tag are in scope -->
-    <!--{{/each}}-->
-  {{/each}}
-</template>
-
-<template name="alarm_list_2">
-  {{#each alarm in alarms}}
-    <div class="card-panel hoverable small">
-      <div class="card-content">
-        <div class="row">
-          <div class="input-field col s3">
-            <input name="alarm_name" type="text" class="validate" value={{alarm.name}}>
-          </div>
-          <div class="input-field col s2">
-            <input name="wake_up_time" type="text" class="validate" value={{alarm.wake_up_time}}>
-          </div>
-          <div class="input-field col s3">
-            <select multiple>
+        <div class="input-field col s2">
+          <input name="wake_up_time" type="text" class="validate" value={{alarm.wake_up_time}}>
+        </div>
+        <div class="input-field col s3">
+          <select multiple>
               <option value="" disabled selected>Choose your option</option>
               {{#each day in week}}
-                <option value="{{day}}" {{wake_up_day alarm.name day}}>{{day}}</option>
+                <option value="{{day.day_num}}" {{wake_up_day alarm day}}>{{day.day_name}}</option>
+                <!--<option value="{{day}}" {{wake_up_day alarm.name day}}>{{day}}</option>-->
                 <!--{{#if wake_up_day alarm.name day}}selected{{/if}}-->
               {{/each}}
             </select>
-            <label>Materialize Multiple Select</label>
-          </div>
-          <div class="input-field col s2">
-            <div class="switch">
-              <label>
+          <label>Materialize Multiple Select</label>
+        </div>
+        <div class="input-field col s2">
+          <div class="switch">
+            <label>
                 Off
                 <input class="add_alarm_toggle" id=on_{{alarm._id}} checked="{{alarm.on}}" type="checkbox">
                 <span class="lever"></span>
                 On
               </label>
-            </div>
           </div>
-          <div class="remove_alarm col s2">
-            <button id=remove_{{alarm._id}} class="btn input-field waves-effect waves-light">Remove</button>
-          </div>
-          
         </div>
-      </div>
+        <div class="remove_alarm col s2">
+          <button id=remove_{{alarm._id}} class="btn input-field waves-effect waves-light">Remove</button>
+        </div>
 
+      </div>
     </div>
+
+  </div>
   {{/each}}
 </template>
