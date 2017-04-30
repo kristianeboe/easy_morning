@@ -19,6 +19,27 @@
         $(document).ready(function () {
           $('select').material_select();
         });
+        var x = 15; //minutes interval
+        var times = {}; // time array
+        var tt = 0; // start time
+        // var ap = ['AM', 'PM']; // AM-PM
+
+        //loop to increment the time and push results in array
+        for (var i=0;tt<24*60; i++) {
+          var hh = Math.floor(tt/60); // getting hours of day in 0-24 format
+          var mm = (tt%60); // getting minutes of the hour in 0-55 format
+          times[("0" + (hh)).slice(-2) + ':' + ("0" + mm).slice(-2)] = null; // pushing data in array in [00:00 - 12:00 AM/PM format]
+          tt = tt + x;
+        }
+        
+        $('input.autocomplete').autocomplete({
+          data: times, 
+          limit: 20, // The max amount of results that can be shown at once. Default: Infinity. 
+          onAutocomplete: function(val) { // Callback function when value is autcompleted. 
+
+          }, 
+          minLength: 1, // The minimum length of the input for the autocomplete to start.Default: 1. 
+          });
       </script>
     {{else}}
       <p>You must be logged-in to add and change alarms</p>
@@ -46,7 +67,7 @@
         <label for="alarm_name">Alarm name</label>
       </div>
       <div class="input-field col s2">
-        <input id="wake_up_time" name="wake_up_time" type="text">
+        <input id="wake_up_time" name="wake_up_time" type="text" class="autocomplete">
         <label for="wake_up_time">Wake up time</label>
       </div>
       <div class="input-field col s2">
@@ -80,18 +101,18 @@
     <div class="card-content">
       <div class="row">
         <div class="input-field col s3">
-          <input name="alarm_name" type="text" class="validate" value={{alarm.name}}>
+          <!--<input name="alarm_name" type="text" class="validate" value={{alarm.name}}>-->
+          <span class="input-field col s3">{{alarm.name}}</span>
         </div>
         <div class="input-field col s2">
-          <input name="wake_up_time" type="text" class="validate" value={{alarm.wake_up_time}}>
+          <!--<input name="wake_up_time" type="text" class="validate" value={{parse_time alarm.wake_up_time}}>-->
+          <span class="input-field col s2">{{parse_time alarm.wake_up_time}}</span>
         </div>
         <div class="input-field col s3">
           <select multiple>
               <option value="" disabled selected>Choose your option</option>
               {{#each day in week}}
                 <option value="{{day.day_num}}" {{wake_up_day alarm day}}>{{day.day_name}}</option>
-                <!--<option value="{{day}}" {{wake_up_day alarm.name day}}>{{day}}</option>-->
-                <!--{{#if wake_up_day alarm.name day}}selected{{/if}}-->
               {{/each}}
             </select>
           <label>Days to wake up</label>

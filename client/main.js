@@ -7,24 +7,9 @@ import {
 
 import './main.html';
 
-
-// Template.hello.onCreated(function helloOnCreated() {
-//   // counter starts at 0
-//   this.counter = new ReactiveVar(0);
-// });
-
-// Template.hello.helpers({
-//   counter() {
-//     return Template.instance().counter.get();
-//   },
-// });
-
-// Template.hello.events({
-//   'click button'(event, instance) {
-//     // increment the counter when button is clicked
-//     instance.counter.set(instance.counter.get() + 1);
-//   },
-// });
+Template.add_alarm.helpers({
+  
+})
 
 Template.add_alarm.events({
   'submit' (event, instance) {
@@ -53,6 +38,9 @@ Template.add_alarm.events({
 })
 
 Template.alarm_list.helpers({
+  parse_time(time) {
+    return parse_time(time);
+  },
   alarms() {
     user_id = Meteor.userId()
     alarms = AlarmDB.find({ userId: user_id }).fetch()
@@ -109,7 +97,11 @@ Template.alarm_list.events({
   'click .switch' (event) {
     _id = event.target.id.substr(3)
     Meteor.call('update_on_off', _id)
-  }
+  },
+  'change' (event) {
+    console.log(event)
+    console.log(event.target)
+  },
 })
 
 Template.update_db.events({
@@ -117,3 +109,10 @@ Template.update_db.events({
     Meteor.call('update_ras_pi')
   }
 })
+
+parse_time = function(time) {
+  if(time.trim().length == 4) {
+    return time.substr(0,2) + ":" + time.substr(2)
+  }
+
+}

@@ -1,1 +1,5 @@
 /* CSS declarations go here */
+
+.autocomplete-content {
+    position: absolute;
+}
