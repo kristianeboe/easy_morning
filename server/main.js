@@ -12,9 +12,9 @@ Meteor.methods({
     alarms = AlarmDB.find().fetch();
 
     HTTP.post(
-      "http://localhost:9966",
+      // "http://localhost:9966",
       // "http://127.0.0.1:4040",
-      // "http://e615520c.ngrok.io",
+      "http://e615520c.ngrok.io",
       {
         data: alarms
       },
