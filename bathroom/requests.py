@@ -36,7 +36,7 @@ class S(BaseHTTPRequestHandler):
 
         for user in users:
             file_name = user +".json"
-            file_ = open(os.path.join("users", file_name), 'w+')
+            file_ = open(os.path.join("users", file_name), 'w')
             file_.write(json.dumps(users[user]))
             file_.close()
 

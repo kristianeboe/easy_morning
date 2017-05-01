@@ -16,8 +16,10 @@ def alarms_to_datetime(alarm):
     wake_up_days = format_time(alarm["wake_up_days"])
     wake_up_threshold = alarm["wake_up_threshold"]
     wake_up_hour = int(wake_up_time[0:2])
-    wake_up_minute = int(wake_up_time[3:4])
+    wake_up_minute = int(wake_up_time[2:4])
 
+    print(wake_up_time, wake_up_threshold)
+    print(wake_up_hour, wake_up_minute)
 
     now = datetime.now().weekday()+1 if datetime.now().weekday() < 6 else 0
 
@@ -36,7 +38,6 @@ def alarms_to_datetime(alarm):
                 alarm_ = datetime.now() + timedelta(days=7)
         else:
             alarm_ = datetime.now() + timedelta(days=delta)
-        
         alarm_ = alarm_.replace(hour=wake_up_hour, minute=wake_up_minute, second=0, microsecond=0)
         alarm_threshold = alarm_ + timedelta(minutes=int(wake_up_threshold))
         alarms.append([alarm_, alarm_threshold])
