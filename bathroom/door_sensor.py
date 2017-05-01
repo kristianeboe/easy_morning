@@ -9,7 +9,7 @@ door_sensor_pin = 18
 MQTT_BROKER = "10.0.0.130"
 MQTT_PORT = 1883 # Default port
 MQTT_KEEPALIVE_INTERVAL = 45
-MQTT_TOPIC = "bathroom/1" #TODO: hardcoded bathroom number
+MQTT_TOPIC = "bathroom/status" #TODO: hardcoded bathroom number
 MQTT_USERS = (1,2,3,4)
 #wake_up_time = false
 #connect to broker
@@ -18,9 +18,12 @@ client = mqtt.Client(client_id = "bathroom", clean_session = True, userdata = No
 
 def on_connect(mosq, obj, rc):
 	print "Connected to MQTT broker"
+    client.subscribe("new_alarm_unit")
 def on_publish(client, userdata, mid):
 	print "Message Published..."
 
+def on_message(client, userdata, msg):
+    if(str(msg.payload)=="")
 
 def door_change():
     #publish mqtt msg door locked
