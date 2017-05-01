@@ -14,6 +14,7 @@ def format_time(time):
 def alarms_to_datetime(alarm):
     wake_up_time = alarm["wake_up_time"]
     wake_up_days = format_time(alarm["wake_up_days"])
+    wake_up_threshold = alarm["wake_up_threshold"]
     wake_up_hour = int(wake_up_time[0:2])
     wake_up_minute = int(wake_up_time[3:4])
 
@@ -22,7 +23,7 @@ def alarms_to_datetime(alarm):
 
     alarms = []
 
-    print(wake_up_hour, wake_up_minute)
+    # print(wake_up_hour, wake_up_minute)
     for wake_up_day in wake_up_days:
         delta = int(wake_up_day) - now
         alarm_ = datetime.now()
@@ -37,7 +38,8 @@ def alarms_to_datetime(alarm):
             alarm_ = datetime.now() + timedelta(days=delta)
         
         alarm_ = alarm_.replace(hour=wake_up_hour, minute=wake_up_minute, second=0, microsecond=0)
-        alarms.append(alarm_)
+        alarm_threshold = alarm_ + timedelta(minutes=int(wake_up_threshold))
+        alarms.append([alarm_, alarm_threshold])
     
     return alarms
 
@@ -57,7 +59,7 @@ for user in users:
     user_to_alarm_datetime[user] = []
     for alarm in alarms:
         alarms_datetime = alarms_to_datetime(alarm)
-        user_to_alarm_datetime[user].append([alarm_datetime.isoformat() for alarm_datetime in alarms_datetime])
+        user_to_alarm_datetime[user].append([ [alarm_datetime.isoformat() for alarm_datetime in alarms] for alarms in alarms_datetime])
 
 
 lol = json.dumps(user_to_alarm_datetime)
