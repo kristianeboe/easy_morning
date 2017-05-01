@@ -51,31 +51,31 @@ Template.alarm_list.helpers({
   week() {
     return [
       {
-        'day_num': '0',
+        'day_num': '1',
         'day_name': 'Monday'
       },
       {
-        'day_num': '1',
+        'day_num': '2',
         'day_name': 'Tuesday'
       },
       {
-        'day_num': '2',
+        'day_num': '3',
         'day_name': 'Wednesday'
       },
       {
-        'day_num': '3',
+        'day_num': '4',
         'day_name': 'Thursday'
       },
       {
-        'day_num': '4',
+        'day_num': '5',
         'day_name': 'Friday'
       },
       {
-        'day_num': '5',
+        'day_num': '6',
         'day_name': 'Saturday'
       },
       {
-        'day_num': '6',
+        'day_num': '0',
         'day_name': 'Sunday'
       },
     ]
