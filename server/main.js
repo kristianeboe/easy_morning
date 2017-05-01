@@ -10,23 +10,36 @@ Meteor.methods({
         alarms = AlarmDB.find().fetch();
         console.log(alarms)
 
-        HTTP.call(
-            'POST',
-            // 'https://129.241.209.166:9966', 
-            'https://pi@0.tcp.ngrok.io:9966', 
-            {
-                data: {
-                    alarm_list: alarms
-                },
-            },
-            function( error, response ) {
-                if ( error ) {
-                    console.log("error")
-                    console.log( error );
-                } else {
-                    console.log("response")
-                    console.log( response );
-                }
-            })
+        // HTTP.call(
+        //     'POST',
+        //     // 'https://129.241.209.166:9966', 
+        //     // 'https://pi@0.tcp.ngrok.io:9966', 
+        //     'http://localhost:8080',
+        //     {
+        //         data: {
+        //             alarm_list: alarms
+        //         },
+        //     },
+        //     function( error, response ) {
+        //         if ( error ) {
+        //             console.log("error")
+        //             console.log( error );
+        //         } else {
+        //             console.log("response")
+        //             console.log( response );
+        //         }
+        //     })
+        HTTP.post(
+          "http://localhost:8080",
+          {
+            data: alarms
+          },
+          function( error, response ) {
+            if (error) {
+              console.log(error);
+            } else {
+              console.log(response);
+            }
+          })
     }
 })
