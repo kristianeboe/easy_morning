@@ -25,22 +25,18 @@ def alarms_to_datetime(alarm):
     print(wake_up_hour, wake_up_minute)
     for wake_up_day in wake_up_days:
         delta = int(wake_up_day) - now
+        alarm_ = datetime.now()
 
         if delta < 0:
             delta = delta + 7
 
         if delta == 0:
-            print(datetime.now())
-            print(datetime.now().replace(hour=wake_up_hour, minute=wake_up_minute))
-            
             if datetime.now() > datetime.now().replace(hour=wake_up_hour, minute=wake_up_minute):
                 alarm_ = datetime.now() + timedelta(days=7)
-                alarm_ =  datetime.now().replace(hour=wake_up_hour, minute=wake_up_minute, second=0, microsecond=0)
-            
         else:
             alarm_ = datetime.now() + timedelta(days=delta)
-            alarm_.replace(hour=wake_up_hour, minute=wake_up_minute, second=0, microsecond=0)
         
+        alarm_ = alarm_.replace(hour=wake_up_hour, minute=wake_up_minute, second=0, microsecond=0)
         alarms.append(alarm_)
     
     return alarms
