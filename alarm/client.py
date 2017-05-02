@@ -10,11 +10,14 @@ import subprocess, signal
 import RPi.GPIO as GPIO
 import os
 
+userid = "blahblah"
 alarm_off_pin = 18
 #ser = serial.Serial('/dev/ttyACM0',9600)
 print_mutex = multiprocessing.Lock()
 
-'''
+
+
+
 ser = serial.Serial(
               
                port='/dev/ttyACM0',
@@ -25,46 +28,91 @@ ser = serial.Serial(
                timeout=1
            ) 
 
-'''
 
-mqttc = mqtt.Client(client_id = "alarm", clean_session = True, userdata = None, protocol = "MQTTv31")
+
+
+
+# Variables 
+MQTT_BROKER = "129.241.209.166"
+#MQTT_BROKER = "10.0.0.130"
+MQTT_PORT = 1883 # Default port
+MQTT_KEEPALIVE_INTERVAL = 45
+
+TOPIC_ALARM = "alarm/"
+TOPIC_NEW_UNIT = "new/alarm/unit"
+TOPIC_STATUS = "bathroom/status"
+TOPIC_CONFIG_INITIAL = "config/initial"
+TOPIC_CONFIG = "config/"
+
+
+client = mqtt.Client(client_id = "alarm", clean_session = True, userdata = None, protocol = "MQTTv31")
+
+
+
 
 def on_connect(client, userdata, rc):
-    mqttc.subscribe("bathroom/1")
-    #mqttc.subscribe(userid)
-    mqttc.subscribe("1")
+    global userid
+    print "Connected to MQTT broker"
+    if os.path.exists('/home/pi/easy_morning/alarm/config.txt'):
+        file = open("config.txt","r")
+        userid = file.readline()
+        file.close()
+        print "userid: " + userid
+        client.subscribe(TOPIC_CONFIG + userid)
+        client.subscribe(TOPIC_STATUS)
+        client.subscribe(TOPIC_ALARM + userid)
+    else:
+        client.subscribe(TOPIC_CONFIG_INITIAL)
+        #client.subscribe(userid)
+        client.subscribe(TOPIC_STATUS)
+        client.publish(TOPIC_NEW_UNIT, payload="I need a toilet! Ho ho ho")
+        print "Published on topic new/alarm/unit"
+
+def on_publish(client, userdata, mid):
+    print "Message Published..."
 
 def on_message(client, userdata, msg):
-    print("received message " + str(msg.payload))
-    global print_mutex
-    print_mutex.acquire()
-    print "on_message has mutex"
-    time.sleep(1)
-    #ser.write('#2')
-    time.sleep(1)
-    if(str(msg.payload)=="open"): 
-        print "status open"
-        #ser.write('status: open') # obs lcd_string(line,msg)   
-    elif(str(msg.payload)=="locked"):
-        print "status locked"
-        #ser.write('status: locked')
-    elif(str(msg.payload)=='alarm'):
+    global userid
+    print("received message on topic: " + msg.topic + ", "+ str(msg.payload))
+    if msg.topic == TOPIC_CONFIG_INITIAL:
+        print "Should have received some config"
+        file = open("config.txt","w+")
+        file.write(str(msg.payload))
+        file.close()
+        userid = str(msg.payload)
+        print "userid: " + userid
+
+
+    elif msg.topic == TOPIC_STATUS:    
+        global print_mutex
+        print_mutex.acquire()
+        print "on_message has mutex"
+        time.sleep(1)
+        ser.write('#2')
+        time.sleep(1)
+        if(str(msg.payload)=="open"): 
+            print "status open"
+            ser.write('status: open') # obs lcd_string(line,msg)   
+        elif(str(msg.payload)=="locked"):
+            print "status locked"
+            ser.write('status: locked')
+        time.sleep(1)
+        ser.write('#1')
+        time.sleep(1)
+        print_mutex.release()
+        print "on_message released mutex"
+
+    elif msg.topic == TOPIC_ALARM + userid:
         sound_alarm = multiprocessing.Process(target=alarm)
         sound_alarm.start()
-    
-    time.sleep(1)
-    #ser.write('#1')
-    time.sleep(1)
-    print_mutex.release()
-    print "on_message released mutex"
-
+        
 def display_time_process():
     global print_mutex
     while True:
         print_mutex.acquire()
         #print "clock has mutex"
         time.sleep(0.9)
-        #ser.write(strftime("%a, %d %b %H:%M:%S", gmtime()))
+        ser.write(strftime("%a, %d %b %H:%M:%S", gmtime()))
         print_mutex.release()
         time.sleep(0.1)
 
@@ -78,11 +126,11 @@ def alarm():
     print_mutex.acquire()
     print "alarm has mutex"
     time.sleep(1)
-    #ser.write('#3')
+    ser.write('#3')
     time.sleep(1)
-    #ser.write('Time to wake up')
+    ser.write('Time to wake up')
     time.sleep(1)
-    #ser.write('#1')
+    ser.write('#1')
     time.sleep(1)
     print_mutex.release()
     print "alarm released mutex"
@@ -98,10 +146,10 @@ def alarm():
     print_mutex.acquire()
     print "alarm has mutex"
     time.sleep(1)
-    #ser.write('#3')
+    ser.write('#3')
     time.sleep(1)
-    #ser.write('Have a good day')
-    #ser.write('#1')
+    ser.write('Have a good day')
+    ser.write('#1')
     time.sleep(1)
     print_mutex.release()
     print "alarm released mutex"
@@ -117,6 +165,8 @@ def alarm():
         
 
 def main():
+    global userid
+
     '''
     if ser.isOpen():
         ser.close()
@@ -125,13 +175,28 @@ def main():
     
     display_time = multiprocessing.Process(target=display_time_process)
     display_time.start()
+  
+    # Event handlers
+    client.on_connect = on_connect
+    client.on_message = on_message
+    client.on_publish = on_publish
+    client.connect(MQTT_BROKER, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)
+    client.loop_forever()
     
-    mqttc.on_connect = on_connect
-    mqttc.on_message = on_message
+   
+    '''
+    if os.path.exists('/home/pi/easy_morning/alarm/config.txt'):
+        file = open("config.txt", "r")
+        userid = file.readline()
+        print ("User ID: {}".format(file.readline()))
+
+    else:   
+        client.publish("new_alarm_unit", payload="I need a toilet! Ho ho ho")
+        print "Published on topic new_alarm_unit"
+    '''   
     
-    #mqttc.connect("129.241.209.166", 1883, 60)
-    mqttc.connect("10.0.0.130", 1883, 60)
-    mqttc.loop_forever()
+
+
 
 if __name__ == "__main__":
     main()
