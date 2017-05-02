@@ -64,6 +64,7 @@ if __name__ == "__main__":
 def get_users(data):
     users = {}
 
+    print(data)
     for alarm in data:
         if users.get(alarm["userId"]):
             users.get(alarm["userId"]).append(alarm)
