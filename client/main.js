@@ -114,5 +114,8 @@ parse_time = function(time) {
   if(time.trim().length == 4) {
     return time.substr(0,2) + ":" + time.substr(2)
   }
+  else {
+    return time
+  }
 
 }
