@@ -3,20 +3,19 @@ import time
 import heapq
 from datetime import datetime
 from threading import Timer
-#TODO: import client
+import door_sensor
 
 def epoch():
     return calendar.timegm(time.gmtime())
 
-start_time = epoch()
+start_time = 0
 heap = []
 timer = None
 
-#TODO: implement function to handle correct day
-#TODO: what happens if two people set time to 0700?
-def add_message(seconds, content):
+def add_alarm(seconds, content):
     top = heap[0] if heap else None
-    heapq.heappush(heap, (epoch() + seconds, content))
+    #TODO: heap.heappush(heap,(start_time + diff(start_time,start_alarm), content))
+    heapq.heappush(heap, (start_time + diff, content))
     if timer and top != heap[0]:
         timer.cancel()
         start()
@@ -24,29 +23,33 @@ def add_message(seconds, content):
 def start():
     global timer
     if heap:
-        timer = Timer(heap[0][0] - epoch(), fire)
+        if(heap[0][0] < start_time):
+            fire()
+        else:
+            timer = Timer(heap[0][0] - start_time, fire)
         timer.start()
 
 def fire():
-    _, message = heapq.heappop(heap)
-    
-    print ('{}: {}'.format(epoch() - start_time, message))
-    # call mqtt 
+    _, liste = heapq.heappop(heap)
+
+    #print ('{}: {}'.format(epoch() - start_time, liste[0]))
+
+    # if treshold > timeNow in epoch, drop.
+    if (liste[2] > calendar.timegm(time.gmtime())):
+        # liste[userid,start_tid,treshold]
+        wake_up_user(liste)
     start()
+    
 
-# get day from config file, 0 is sunday 6 
-def convert_time(input_time):
-	hour,min = input_time.split(':')
-	second = "00"
-	print(hour)
-	print(min)
-	now = datetime.datetime.now()
-  
+def loop_dict(dict):
+    global start_time
+    start_time = epoch()
+    # dict{"user":[[start,treshold]]}
+    for key, value in dict.iteritems():
+        for t in value:
+            #TODO: define format of received values
+            add_alarm(t[0], [key,t[0],t[1]])
 
 
-# add_message(seconds until user should be woken up, userid)
-#convert_time("07:00",0)
-add_message(5, 'message3')
-start()
-add_message(1, 'message4')
+
 
